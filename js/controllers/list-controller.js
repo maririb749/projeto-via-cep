@@ -7,7 +7,7 @@ export function init() {
     state.listSection = document.querySelector("#list-section");
 }
 
-export function addCCard(address) {
+export function addCard(address) {
     const card = createCard(address);
     state.listSection.appendChild(card);
 }
