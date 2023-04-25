@@ -1,5 +1,5 @@
 import Address from "../models/address.js";
-import * as requestService from '../services/request-service.js';
+import * as addressService from '../services/address-service.js';
 
 
 function State() {
@@ -37,23 +37,42 @@ export function init() {
     state.inputNumber.addEventListener('change', handleInputNumberChange);
     state.btnClear.addEventListener('click', handleBtnClearClick);
     state.btnSave.addEventListener('click', handleBtnSaveClick);
-
+    state.inputCep.addEventListener('change', handleInputCepChange);
 
 }
 
+async function handleInputCepChange(event) {
+    const cep = event.target.value;
+
+    try {
+        const address = await addressService.findByCep(cep);
+
+        state.inputStreet.value = address.street;
+        state.inputCity.value = address.city;
+        state.address = address;
+
+        setFormError("cep", "");
+        state.inputNumber.focus();
+    } catch (e) {
+        state.inputStreet.value = "";
+        state.inputCity.value = "";
+        setFormError("cep", "Informe um cep válido");
+    }
+}
+
+
 async function handleBtnSaveClick(event) {
     event.preventDefault();
-    const result = await requestService.getJson('https://viacep.com.br/ws/01001000/json/');
-    console.log(result);
+    console.log(event.target);
 
 }
 
 
 function handleInputNumberChange(event) {
     if (event.target.value == "") {
-        setFromError("number", "Campo requerido");
+        setFormError("number", "Campo requerido");
     } else {
-        setFromError("number", "");
+        setFormError("number", "");
     }
 
 }
@@ -69,14 +88,14 @@ function clearForm() {
     state.inputNumber.value = "";
     state.inputStreet.value = "";
 
-    setFromError("cep", "");
-    setFromError("number", "");
+    setFormError("cep", "");
+    setFormError("number", "");
 
     state.inputCep.focus();
 
 }
 
-function setFromError(key, value) {
+function setFormError(key, value) {
     const element = document.querySelector(`[data-error="${key}"]`);
     element.innerHTML = value;
 }

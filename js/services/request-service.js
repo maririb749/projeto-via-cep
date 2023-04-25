@@ -1,7 +1,6 @@
 import RequestException from "./exceptions/exceptions-request.js";
 
 
-
 export async function getJson(url) {
     try {
         const response = await fetch(url);
